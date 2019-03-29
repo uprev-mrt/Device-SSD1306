@@ -99,7 +99,7 @@ void wc_oled_cmd(wc_oled_t* dev, uint8_t cmd);
   *@param dev ptr to wc_oled device
   *@param cmd command to send
   */
-void wc_oled_data(wc_oled_t* dev, uint8_t data);
+void wc_oled_data(wc_oled_t* dev, uint8_t* data, int len);
 
 /**
   *@brief updates the device with the local buffer
@@ -116,25 +116,6 @@ mrt_status_t wc_oled_update(wc_oled_t* dev);
   */
 mrt_status_t wc_oled_reset(wc_oled_t* dev);
 
-/**
-  *@brief Draws a bitmap to the buffer
-  *@param dev ptr to device descriptor
-  *@param x x coord to begin drawing at
-  *@param y y coord to begin drawing at
-  *@param bmp bitmap to draw
-  *@return status of operation
-  */
-mrt_status_t wc_oled_draw_bmp(wc_oled_t* dev, uint16_t x, uint16_t y, GFXBmp* bmp, ink_color_e color);
-
-/**
-  *@brief Draws rendered text to the buffer
-  *@param dev ptr to device descriptor
-  *@param x x coord to begin drawing at
-  *@param y y coord to begin drawing at
-  *@param text text to be written
-  *@return status of operation
-  */
-mrt_status_t wc_oled_print(wc_oled_t* dev, uint16_t x, uint16_t y, const char * text, ink_color_e color);
 
 /**
   *@brief clears buffer and display
@@ -144,13 +125,6 @@ mrt_status_t wc_oled_print(wc_oled_t* dev, uint16_t x, uint16_t y, const char * 
 mrt_status_t wc_oled_clear(wc_oled_t* dev);
 
 
-/**
-  *@brief fill buffer with value
-  *@param dev ptr to device
-  *@param val value to write
-  *@return status of operation
-  */
-mrt_status_t wc_oled_fill(wc_oled_t* dev, ink_color_e color, uint8_t val);
 
 /**
   *@brief waits for device to not be busy
@@ -158,10 +132,3 @@ mrt_status_t wc_oled_fill(wc_oled_t* dev, ink_color_e color, uint8_t val);
   *@return status of operation
   */
 mrt_status_t wc_oled_wait(wc_oled_t* dev, int timeout_ms);
-
-/**
-  *@brief puts device into sleep mode
-  *@param dev ptr to device
-  *@return status
-  */
-mrt_status_t wc_oled_sleep(wc_oled_t* dev);

@@ -20,12 +20,14 @@ mrt_status_t wc_oled_init(wc_oled_t* dev, wc_oled_hw_cfg_t* hw, int width, int h
 
 
     //initialize graphics canvases as buffered so they maintain their own data
-    mono_gfx_init_buffered(&dev->mCanvasBlk, width, height);
-    mono_gfx_init_buffered(&dev->mCanvasRed, width, height);
+    mono_gfx_init_buffered(&dev->mCanvas, width, height);
+
+	MRT_GPIO_WRITE(dev->mHW.mRST,HIGH);
+
 
     dev->mFont = NULL;
 
-    vccstate = SSD1306_SWITCHCAPVCC;
+    vccstate = SSD1306_EXTERNALVCC;
 
     // Init sequence
    wc_oled_cmd(dev,SSD1306_DISPLAYOFF);                    // 0xAE
@@ -88,23 +90,27 @@ mrt_status_t wc_oled_init(wc_oled_t* dev, wc_oled_hw_cfg_t* hw, int width, int h
 }
 
 
-void wc_oled_cmd(dev,wc_oled_t* dev, uint8_t cmd)
+void wc_oled_cmd(wc_oled_t* dev, uint8_t cmd)
 {
 
   MRT_GPIO_WRITE(dev->mHW.mDC,LOW);
   MRT_GPIO_WRITE(dev->mHW.mCS,LOW);
+  MRT_DELAY_MS(1);
   MRT_SPI_TRANSMIT(dev->mHW.mSpi , &cmd, 1, 20);
   MRT_GPIO_WRITE(dev->mHW.mCS,HIGH);
+  MRT_DELAY_MS(1);
 
 }
 
-void wc_oled_data(wc_oled_t* dev, uint8_t data)
+void wc_oled_data(wc_oled_t* dev, uint8_t* data, int len)
 {
 
   MRT_GPIO_WRITE(dev->mHW.mDC,HIGH);
   MRT_GPIO_WRITE(dev->mHW.mCS,LOW);
-  MRT_SPI_TRANSMIT(dev->mHW.mSpi , &data, 1, 20);
+  MRT_DELAY_MS(1);
+  MRT_SPI_TRANSMIT(dev->mHW.mSpi , data, len, 20);
   MRT_GPIO_WRITE(dev->mHW.mCS,HIGH);
+  MRT_DELAY_MS(1);
 
 }
 
@@ -112,6 +118,20 @@ void wc_oled_data(wc_oled_t* dev, uint8_t data)
 mrt_status_t wc_oled_update(wc_oled_t* dev)
 {
   //TODO
+  //  oled_refresh_sh1106();
+  //return;
+  wc_oled_cmd(dev,SSD1306_COLUMNADDR);
+  wc_oled_cmd(dev,0);   // Column start address (0 = reset)
+  wc_oled_cmd(dev,SSD1306_LCDWIDTH-1); // Column end address (127 = reset)
+
+  wc_oled_cmd(dev,SSD1306_PAGEADDR);
+  wc_oled_cmd(dev,0); // Page start address (0 = reset)
+  wc_oled_cmd(dev,7); // Page end address
+
+  for(int i= 0; i < 64; i ++)
+  {
+    wc_oled_data(dev, &dev->mCanvas.mBuffer[i*16],16);
+  }
   return MRT_STATUS_OK;
 }
 
@@ -126,7 +146,7 @@ mrt_status_t wc_oled_reset(wc_oled_t* dev)
 
 mrt_status_t wc_oled_clear(wc_oled_t* dev)
 {
-
+    mono_gfx_fill(&dev->mCanvas,0);
     return MRT_STATUS_OK;
 }
 
@@ -135,12 +155,4 @@ mrt_status_t wc_oled_wait(wc_oled_t* dev, int timeout_ms)
   //TODO
 
   return MRT_STATUS_ERROR;
-}
-
-
-mrt_status_t wc_oled_sleep(wc_oled_t* dev)
-{
-  //TODO
-
-  return MRT_STATUS_OK;
 }
