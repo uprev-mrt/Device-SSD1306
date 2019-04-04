@@ -1,3 +1,1 @@
-# Device-OLED_WC
-
-Device driver for wisechip oled display
+# Device Driver for SSD1306 based oled displays
