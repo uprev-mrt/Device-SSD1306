@@ -69,13 +69,13 @@ typedef struct{
 typedef struct{
   mono_gfx_t mCanvas;
   const GFXfont* mFont;
-  wc_oled_hw_cfg_t mHW;
+  ssd1306_hw_cfg_t mHW;
 }ssd1306_t;
 
 void ssd1306_init(ssd1306_t* dev,ssd1306_hw_cfg_t* hw, uint16_t width, uint16_t height );
 void ssd1306_refresh(ssd1306_t* dev);
 void ssd1306_clearDisplay(ssd1306_t* dev);
-void ssd1306_invertDisplay(ssd1306_t* dev,boolean i);
-void ssd1306_dim(ssd1306_t* dev,boolean dim);
+void ssd1306_invertDisplay(ssd1306_t* dev,uint8_t i);
+void ssd1306_dim(ssd1306_t* dev, uint8_t dim);
 void ssd1306_command(ssd1306_t* dev, uint8_t cmd);
 void ssd1306_data(ssd1306_t* dev, uint8_t* data, int len);
