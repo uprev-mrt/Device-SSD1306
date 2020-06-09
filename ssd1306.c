@@ -9,6 +9,7 @@
 
 
 #include "ssd1306.h"
+#include <string.h>
 
 mrt_status_t ssd1306_write_pixel(mono_gfx_t* gfx, int x, int y, uint8_t val)
 {
